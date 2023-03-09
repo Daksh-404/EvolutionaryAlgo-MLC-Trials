@@ -118,7 +118,7 @@ class GeneticAlgorithm:
         new_population = prev_gen[:elitism_rate] + new_gen[:population_size - elitism_rate]
         return new_population
     
-    def genetic_algorithm(self, population_size, num_generations, mutation_rate = 0.01, crossover_rate = 0.9, elitism_rate = 5):
+    def genetic_algorithm(self, population_size = 50, num_generations = 100, mutation_rate = 0.01, crossover_rate = 0.9, elitism_rate = 5):
         # Initialize the population
         population = [self.generate_individual() for i in range(population_size)]
         
@@ -140,6 +140,5 @@ class GeneticAlgorithm:
         
         # Return the fittest individual
         return max(population, key = self.fitness_fn)
-
 
 
