@@ -46,6 +46,7 @@ class StackedChaining:
         self.new_label_order = []
         self.num_features = len(self.features.columns)
         self.num_classes = len(self.classes.columns)
+        self.metric_values={}
         print("StackChaining Activated!")
 
     def generate_new_label_order(self):
@@ -171,53 +172,61 @@ class StackedChaining:
             
             f_pos_l2 = f_pos_l2 + 1
             
-            X_Train_L2.insert(f_pos_l2, each_label, Y_Pred_L2_Train.values)
+            X_Train_L2.insert(f_pos_l2, each_label, Y_Pred_L2_Train)
             X_Test_L2.insert(f_pos_l2, each_label, Y_Pred_L2)
 
-            return Y_Pred_DFrame_L2, Y_Pred_Prob_DFrame_L2
+        return Y_Pred_DFrame_L2, Y_Pred_Prob_DFrame_L2
 
     def print_metrics(self, Y_Test_New, Y_Pred_DFrame_L2, Y_Pred_Prob_DFrame_L2):
 
-        print("##### OVERALL PERFORMANCE EVALUATION #####")
-        print("CLASSIFICATION REPORT : ")
-        print(classification_report(Y_Test_New, Y_Pred_DFrame_L2))
-
+        # print("##### OVERALL PERFORMANCE EVALUATION #####")
+        # print("CLASSIFICATION REPORT : ")
+        # print(classification_report(Y_Test_New, Y_Pred_DFrame_L2))
+        # print(f"Y test new shape: {Y_Test_New.shape} and Y pred DFrame shape: {Y_Pred_DFrame_L2.shape}")
         h_loss_all = hamming_loss(Y_Test_New, Y_Pred_DFrame_L2)
         acc_all = 1 - h_loss_all
-        print("HAMMING LOSS : ", h_loss_all)
-        print("ACCURACY : ", acc_all)
-
-        print("SUBSET ACCURACY : ", accuracy_score(Y_Test_New, Y_Pred_DFrame_L2))
-        print("LABEL RANKING LOSS : ", label_ranking_loss(Y_Test_New, Y_Pred_Prob_DFrame_L2))
-        print("COVERAGE ERROR : ", coverage_error(Y_Test_New, Y_Pred_Prob_DFrame_L2))
-        print("ZERO ONE LOSS : ", zero_one_loss(Y_Test_New, Y_Pred_DFrame_L2))
-        print("AVERAGE PRECISION SCORE : ", average_precision_score(Y_Test_New, Y_Pred_Prob_DFrame_L2))
-
-        # print("ROC AUC MICRO : ", roc_auc_score(Y_Test_New, Y_Pred_Prob_DFrame_L2, average = 'micro'))
-        # print("ROC AUC MACRO : ", roc_auc_score(Y_Test_New, Y_Pred_Prob_DFrame_L2, average = 'macro'))
-
-        print("LABEL RANKING APR : ", label_ranking_average_precision_score(Y_Test_New, Y_Pred_Prob_DFrame_L2))
-        print("JACCARD MACRO : ", jaccard_score(Y_Test_New, Y_Pred_DFrame_L2, average = 'macro'))
-        print("JACCARD MICRO : ", jaccard_score(Y_Test_New, Y_Pred_DFrame_L2, average = 'micro'))
-        print("JACCARD SAMPLES : ", jaccard_score(Y_Test_New, Y_Pred_DFrame_L2, average = 'samples'))
-
-
+        self.metric_values["HAMMING LOSS"]=h_loss_all
+        self.metric_values["ACCURACY"]=acc_all
+        self.metric_values["SUBSET ACCURACY"]=accuracy_score(Y_Test_New, Y_Pred_DFrame_L2)
+        self.metric_values["LABEL RANKING LOSS"]=label_ranking_loss(Y_Test_New, Y_Pred_Prob_DFrame_L2)
+        self.metric_values["COVERAGE ERROR"]=coverage_error(Y_Test_New, Y_Pred_Prob_DFrame_L2)
+        self.metric_values["ZERO ONE LOSS"]=zero_one_loss(Y_Test_New, Y_Pred_DFrame_L2)
+        self.metric_values["AVERAGE PRECISION SCORE"]=average_precision_score(Y_Test_New, Y_Pred_Prob_DFrame_L2)
+        self.metric_values["LABEL RANKING APR"]=label_ranking_average_precision_score(Y_Test_New, Y_Pred_Prob_DFrame_L2)
+        self.metric_values["JACCARD MACRO"]=jaccard_score(Y_Test_New, Y_Pred_DFrame_L2, average = 'macro')
+        self.metric_values["JACCARD MICRO"]=jaccard_score(Y_Test_New, Y_Pred_DFrame_L2, average = 'micro')
+        self.metric_values["JACCARD SAMPLES"]=jaccard_score(Y_Test_New, Y_Pred_DFrame_L2, average = 'samples')
         one_err = one_error(Y_Test_New, Y_Pred_Prob_DFrame_L2.values)
-        print("ONE ERROR : ", one_err)
+        self.metric_values["ONE ERROR"]=one_err
+        self.metric_values["F1 SCORE MACRO"]=f1_score(Y_Test_New, Y_Pred_DFrame_L2, average = 'macro')
+        self.metric_values["F1 SCORE MICRO"]=f1_score(Y_Test_New, Y_Pred_DFrame_L2, average = 'micro')
+        self.metric_values["F1 SCORE SAMPLES"]=f1_score(Y_Test_New, Y_Pred_DFrame_L2, average = 'samples')
 
-        print("F1 SCORE MACRO : ", f1_score(Y_Test_New, Y_Pred_DFrame_L2, average = 'macro'))
-        print("F1 SCORE MICRO : ", f1_score(Y_Test_New, Y_Pred_DFrame_L2, average = 'micro'))
-        print("F1 SCORE SAMPLES : ", f1_score(Y_Test_New, Y_Pred_DFrame_L2, average = 'samples'))
+        # print("HAMMING LOSS : ", h_loss_all)
+        # print("ACCURACY : ", acc_all)
+        # print("SUBSET ACCURACY : ", self.metric_values["SUBSET ACCURACY"])
+        # print("LABEL RANKING LOSS : ", self.metric_values["LABEL RANKING LOSS"])
+        # print("COVERAGE ERROR : ", self.metric_values["COVERAGE ERROR"])
+        # print("ZERO ONE LOSS : ", self.metric_values["ZERO ONE LOSS"])
+        # print("AVERAGE PRECISION SCORE : ", self.metric_values["AVERAGE PRECISION SCORE"])
 
-        print("Training Time : ", self.training_time)
-        print("Time in Predictions : ", self.prediction_time)
+        # # print("ROC AUC MICRO : ", roc_auc_score(Y_Test_New, Y_Pred_Prob_DFrame_L2, average = 'micro'))
+        # # print("ROC AUC MACRO : ", roc_auc_score(Y_Test_New, Y_Pred_Prob_DFrame_L2, average = 'macro'))
+        # print("LABEL RANKING APR : ", self.metric_values["LABEL RANKING APR"])
+        # print("JACCARD MACRO : ", self.metric_values["JACCARD MACRO"])
+        # print("JACCARD MICRO : ", self.metric_values["JACCARD MICRO"])
+        # print("JACCARD SAMPLES : ", self.metric_values["JACCARD SAMPLES"])
+
+        # print("ONE ERROR : ", one_err)
+        # print("F1 SCORE MACRO : ", self.metric_values["F1 SCORE MACRO"])
+        # print("F1 SCORE MICRO : ", self.metric_values["F1 SCORE MICRO"])
+        # print("F1 SCORE SAMPLES : ", self.metric_values["F1 SCORE SAMPLES"])
+
+        # print("Training Time : ", self.training_time)
+        # print("Time in Predictions : ", self.prediction_time)
 
     def run(self):
         self.generate_new_label_order()
         Y_Pred_DFrame, Y_Test_New = self.level0_chaining()
         Y_Pred_DFrame_L2, Y_Pred_Prob_DFrame_L2 = self.level1_chaining(Y_Pred_DFrame)
         self.print_metrics(Y_Test_New, Y_Pred_DFrame_L2, Y_Pred_Prob_DFrame_L2)
-    
-
-
-

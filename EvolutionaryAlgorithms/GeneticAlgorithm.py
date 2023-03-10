@@ -137,4 +137,3 @@ class GeneticAlgorithm:
         
         # Return the fittest individual
         return max(population, key = self.fitness_fn)
-
