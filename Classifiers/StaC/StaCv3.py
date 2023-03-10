@@ -213,6 +213,7 @@ class StackedChaining:
         print("Time in Predictions : ", self.prediction_time)
 
     def run(self):
+        self.generate_new_label_order()
         Y_Pred_DFrame, Y_Test_New = self.level0_chaining()
         Y_Pred_DFrame_L2, Y_Pred_Prob_DFrame_L2 = self.level1_chaining(Y_Pred_DFrame)
         self.print_metrics(Y_Test_New, Y_Pred_DFrame_L2, Y_Pred_Prob_DFrame_L2)

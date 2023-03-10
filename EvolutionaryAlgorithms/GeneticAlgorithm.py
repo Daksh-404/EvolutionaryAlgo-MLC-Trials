@@ -1,4 +1,5 @@
 import random
+from tqdm import tqdm
 
 class GeneticAlgorithm:
     def __init__(self, chromosome_size, conditional_entropy_matrix) -> None:
@@ -40,7 +41,6 @@ class GeneticAlgorithm:
         parents = []
         for i in range(num_parents):
             competitors = random.sample(list(enumerate(population)), k=2)
-            print(competitors)
             winner = max(competitors, key=lambda x: fitness_scores[x[0]])
             parents.append(winner[1])
         return parents
@@ -55,7 +55,6 @@ class GeneticAlgorithm:
                     break
                 prob -= fitness_val
             parents.append(population[j])
-            print(j)
         return parents
 
     def crossover_helper(self, parent1, parent2, start, end):
@@ -81,8 +80,7 @@ class GeneticAlgorithm:
             child1 = self.crossover_helper(parent1, parent2, start, end)
             child2 = self.crossover_helper(parent2, parent1, start, end)
         else:
-            child1 = random.sample(population, k = 1)[0]
-            child2 = random.sample(population, k = 1)[0]
+            child1, child2 = random.sample(population, k = 2)
         return child1, child2
         
 
@@ -106,7 +104,6 @@ class GeneticAlgorithm:
             offspring.append(child2)
             temp_parents.remove(father)
             temp_parents.remove(mother)
-            print(len(offspring))
         return offspring
 
     def refine_population(self, offspring, parents, elitism_rate, population_size):
@@ -118,7 +115,7 @@ class GeneticAlgorithm:
         new_population = prev_gen[:elitism_rate] + new_gen[:population_size - elitism_rate]
         return new_population
     
-    def genetic_algorithm(self, population_size = 50, num_generations = 100, mutation_rate = 0.01, crossover_rate = 0.9, elitism_rate = 5):
+    def genetic_algorithm(self, population_size = 50, num_generations = 1, mutation_rate = 0.01, crossover_rate = 0.9, elitism_rate = 5):
         # Initialize the population
         population = [self.generate_individual() for i in range(population_size)]
         
@@ -140,5 +137,4 @@ class GeneticAlgorithm:
         
         # Return the fittest individual
         return max(population, key = self.fitness_fn)
-
 
