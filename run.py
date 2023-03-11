@@ -29,7 +29,7 @@ def test_parameters(
     iterations=1,
 ):
     info_table = {}
-    info_table['iteration']=[]
+    info_table["iteration"] = []
     for metric in metrics_list:
         info_table[metric] = []
     for i in range(iterations):
@@ -48,7 +48,7 @@ def test_parameters(
         stacked_chaining.run()
         for metric in metrics_list:
             info_table[metric].append(stacked_chaining.metric_values[metric])
-        info_table['iteration'].append(i+1)
+        info_table["iteration"].append(i + 1)
     return info_table
 
 
@@ -60,7 +60,7 @@ def run(
     crossover_rate_trial_values,
     elitism_trial_values,
     split,
-    iterations=1
+    iterations=1,
 ):
     # "LABEL RANKING LOSS",
     # "COVERAGE ERROR",
@@ -81,7 +81,7 @@ def run(
     parameter_names = ["Generations", "Mutation rate", "Crossover rate", "Elitism Rate"]
 
     info_table = {}
-    info_table['iteration']=[]
+    info_table["iteration"] = []
     for parameter in parameter_names:
         info_table[parameter] = []
 
@@ -110,11 +110,11 @@ def run(
                         iterations=iterations,
                     )
                     for key in tmp_info:
-                        info_table[key]+=tmp_info[key]
-                    info_table["Generations"]+=[generation]*iterations
-                    info_table["Mutation rate"]+=[mutation_rate]*iterations
-                    info_table["Crossover rate"]+=[crossover_rate]*iterations
-                    info_table["Elitism Rate"]+=[elitism]*iterations
+                        info_table[key] += tmp_info[key]
+                    info_table["Generations"] += [generation] * iterations
+                    info_table["Mutation rate"] += [mutation_rate] * iterations
+                    info_table["Crossover rate"] += [crossover_rate] * iterations
+                    info_table["Elitism Rate"] += [elitism] * iterations
     return info_table
 
 
@@ -141,10 +141,10 @@ def run_pipeline():
                 crossover_rate_trial_values=crossover_rate_trial_values,
                 elitism_trial_values=elitism_trial_values,
                 split=split,
-                iterations=10
+                iterations=10,
             )
             csv = pd.DataFrame(data=info_table)
-            csv.to_csv(f"{file}_testing_result.csv")
+            csv.to_csv(f"{file}_test_results.csv")
     print("PIPELINE CLOSED!")
 
 
