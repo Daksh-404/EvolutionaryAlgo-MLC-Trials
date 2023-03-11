@@ -29,9 +29,10 @@ def test_parameters(
     iterations=1,
 ):
     info_table = {}
+    info_table['iteration']=[]
     for metric in metrics_list:
-        info_table[metric]=[]
-    for _ in range(iterations):
+        info_table[metric] = []
+    for i in range(iterations):
         geneticObj = GeneticAlgorithm(len(dset_classes.columns), ce_matrix)
         label_order = geneticObj.genetic_algorithm(
             population_size=100,
@@ -47,8 +48,7 @@ def test_parameters(
         stacked_chaining.run()
         for metric in metrics_list:
             info_table[metric].append(stacked_chaining.metric_values[metric])
-    for metric in metrics_list:
-        info_table[metric] = np.mean(np.array(info_table[metric]))
+        info_table['iteration'].append(i+1)
     return info_table
 
 
@@ -60,19 +60,20 @@ def run(
     crossover_rate_trial_values,
     elitism_trial_values,
     split,
+    iterations=1
 ):
+    # "LABEL RANKING LOSS",
+    # "COVERAGE ERROR",
+    # "ZERO ONE LOSS",
+    # "AVERAGE PRECISION SCORE",
+    # "LABEL RANKING APR",
+    # "ONE ERROR",
     metrics_list = [
         "HAMMING LOSS",
         "SUBSET ACCURACY",
-        "LABEL RANKING LOSS",
-        "COVERAGE ERROR",
-        "ZERO ONE LOSS",
-        "AVERAGE PRECISION SCORE",
-        "LABEL RANKING APR",
         "JACCARD MACRO",
         "JACCARD MICRO",
         "JACCARD SAMPLES",
-        "ONE ERROR",
         "F1 SCORE MACRO",
         "F1 SCORE MICRO",
         "F1 SCORE SAMPLES",
@@ -80,6 +81,7 @@ def run(
     parameter_names = ["Generations", "Mutation rate", "Crossover rate", "Elitism Rate"]
 
     info_table = {}
+    info_table['iteration']=[]
     for parameter in parameter_names:
         info_table[parameter] = []
 
@@ -93,10 +95,8 @@ def run(
         for mutation_rate in mutation_rate_trial_values:
             for cross_index in tqdm(range(len(crossover_rate_trial_values))):
                 crossover_rate = crossover_rate_trial_values[cross_index]
-                print(f"Crossover rate: {crossover_rate}")
                 for elite_index in tqdm(range(len(elitism_trial_values))):
                     elitism = elitism_trial_values[elite_index]
-                    print(f"Elitism: {elitism}")
                     tmp_info = test_parameters(
                         dset_classes=dset_classes,
                         dset_features=dset_features,
@@ -107,14 +107,14 @@ def run(
                         elitism=elitism,
                         split=split,
                         metrics_list=metrics_list,
-                        iterations=10
+                        iterations=iterations,
                     )
-                    for metric in metrics_list:
-                        info_table[metric].append(tmp_info[metric])
-                    info_table["Generations"].append(generation)
-                    info_table["Mutation rate"].append(mutation_rate)
-                    info_table["Crossover rate"].append(crossover_rate)
-                    info_table["Elitism Rate"].append(elitism)
+                    for key in tmp_info:
+                        info_table[key]+=tmp_info[key]
+                    info_table["Generations"]+=[generation]*iterations
+                    info_table["Mutation rate"]+=[mutation_rate]*iterations
+                    info_table["Crossover rate"]+=[crossover_rate]*iterations
+                    info_table["Elitism Rate"]+=[elitism]*iterations
     return info_table
 
 
@@ -123,7 +123,7 @@ def run_pipeline():
 
     os.chdir(path_to_dataset)
     for file in os.listdir():
-        if file.count("testing")==0:
+        if file.count("testing") == 0:
             split = int(file.split("_")[1].split(".")[0])
             dset = pd.read_csv(os.path.join(path_to_dataset, file))
             generations = [100]
@@ -141,9 +141,10 @@ def run_pipeline():
                 crossover_rate_trial_values=crossover_rate_trial_values,
                 elitism_trial_values=elitism_trial_values,
                 split=split,
+                iterations=10
             )
             csv = pd.DataFrame(data=info_table)
-            csv.to_csv("testing_result.csv")
+            csv.to_csv(f"{file}_testing_result.csv")
     print("PIPELINE CLOSED!")
 
 
