@@ -94,6 +94,7 @@ class StackedChaining:
 
         X_Train = self.X_Train_original
         X_Test = self.X_Test_original
+        
         print("PROPOSED STACKED CLASSIFIER CHAIN")
 
         print("##### LEVEL - 0 CLASSIFIER CHAIN #####")
@@ -142,7 +143,7 @@ class StackedChaining:
         Y_Pred_DFrame_L2 = pd.DataFrame()
         Y_Pred_Prob_DFrame_L2 = pd.DataFrame()
         pos_l2 = -1
-        f_pos_l2 = self.num_classes + self.num_features
+        f_pos_l2 = self.num_classes + self.num_features - 1
         if self.name == "yeast":
             f_pos_l2 = 114
         elif self.name == "genbase":

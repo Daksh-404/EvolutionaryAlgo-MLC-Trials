@@ -6,7 +6,7 @@ from sklearn.metrics import hamming_loss, classification_report
 from sklearn.metrics import accuracy_score, label_ranking_loss, coverage_error, average_precision_score, zero_one_loss
 # from sklearn.metrics import roc_auc_score
 from sklearn.metrics import label_ranking_average_precision_score
-from sklearn.metrics import jaccard_similarity_score
+from sklearn.metrics import jaccard_score
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import f1_score
@@ -23,7 +23,7 @@ warnings.filterwarnings('ignore')
 # dset = pd.read_csv("full_cal500.csv")
 # dset = pd.read_csv("full_rcv1.csv")
 # dset = pd.read_csv("full_flags.csv")
-dset = pd.read_csv("full_mediamill.csv")
+dset = pd.read_csv("../../Datasets/mediamill_120.csv")
 print(dset.shape)
 print(dset.head(5))
 
@@ -147,9 +147,11 @@ pos_l2 = -1
 # f_pos_l2 = 207 # CAL 500
 # f_pos_l2 = 1025 # RCV 1 S 1
 # f_pos_l2 = 25 # FLAGS
-f_pos_l2 = 220 # MEDIA MILL
+f_pos_l2 = 219 # MEDIA MILL
 
 print("##### LEVEL - 1 CLASSIFIER CHAIN #####")
+
+
 for each_label in classes:
     print("LABEL in CHAIN : ", each_label)
     Y_Train_L2 = X_Train_L2[each_label]
@@ -182,6 +184,7 @@ for each_label in classes:
     Y_Pred_Prob_DFrame_L2.insert(pos_l2, prob_label, Y_Pred_Prob_L2[:, 1])
     
     f_pos_l2 = f_pos_l2 + 1
+    print(f_pos_l2)
     tr_new_col_vals = Y_Train_L2.values
     
     X_Train_L2.insert(f_pos_l2, each_label, tr_new_col_vals)
