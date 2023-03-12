@@ -47,12 +47,13 @@ def one_error(Y_test_oe, Y_score_oe):
 
 
 class StackedChaining:
-    def __init__(self, features, classes, split, label_order) -> None:
+    def __init__(self, features, classes, split, label_order, name) -> None:
         self.features = features
         self.classes = classes
         self.split = split
         self.training_time = 0
         self.prediction_time = 0
+        self.name = name
         self.label_order = label_order
         (
             self.X_Train_original,
@@ -81,6 +82,9 @@ class StackedChaining:
 
         pos = -1
         f_pos = self.split - 1
+        if self.name == "genbase": 
+            f_pos = f_pos - 1
+
         Y_Train_New = pd.DataFrame()
         Y_Test_New = pd.DataFrame()
 
@@ -131,7 +135,6 @@ class StackedChaining:
         Y_Train_All_L2 = self.Y_Train_All_original
         X_Test_L2 = self.X_Test_original
 
-
         for new_lbl in self.new_label_order:
             X_Train_L2[new_lbl] = Y_Train_All_L2[new_lbl].values
             X_Test_L2[new_lbl] = Y_Pred_DFrame[new_lbl].values
@@ -139,7 +142,15 @@ class StackedChaining:
         Y_Pred_DFrame_L2 = pd.DataFrame()
         Y_Pred_Prob_DFrame_L2 = pd.DataFrame()
         pos_l2 = -1
-        f_pos_l2 = self.num_classes + self.num_features - 1
+        f_pos_l2 = self.num_classes + self.num_features
+        if self.name == "yeast":
+            f_pos_l2 = 114
+        elif self.name == "genbase":
+            f_pos_l2 = 1200
+        elif self.name == "CAL500":
+            f_pos_l2 = 207
+        elif self.name == "Corel5k":
+            f_pos_l2 = 711
 
         print("##### LEVEL - 1 NESTED STACKING #####")
         for each_label in self.new_label_order:

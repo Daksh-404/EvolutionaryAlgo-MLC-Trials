@@ -26,7 +26,8 @@ def test_parameters(
     elitism,
     split,
     metrics_list,
-    iterations=1,
+    name,
+    iterations=1
 ):
     info_table = {}
     info_table["iteration"] = []
@@ -43,7 +44,7 @@ def test_parameters(
         )
         # Getting results on the given approach for MLC
         stacked_chaining = StackedChaining(
-            dset_features, dset_classes, split, label_order
+            dset_features, dset_classes, split, label_order, name
         )
         stacked_chaining.run()
         for metric in metrics_list:
@@ -60,7 +61,8 @@ def run(
     crossover_rate_trial_values,
     elitism_trial_values,
     split,
-    iterations=1,
+    name,
+    iterations=1
 ):
     # "LABEL RANKING LOSS",
     # "COVERAGE ERROR",
@@ -107,7 +109,8 @@ def run(
                         elitism=elitism,
                         split=split,
                         metrics_list=metrics_list,
-                        iterations=iterations,
+                        name=name,
+                        iterations=iterations
                     )
                     for key in tmp_info:
                         info_table[key] += tmp_info[key]
@@ -125,14 +128,21 @@ def run_pipeline():
     for file in os.listdir():
         if file.count("testing") == 0:
             split = int(file.split("_")[1].split(".")[0])
+            name = file.split("_")[0]
             dset = pd.read_csv(os.path.join(path_to_dataset, file))
             generations = [100]
             mutation_rate_trial_values = list(np.linspace(start=0.01, stop=0.01, num=1))
             crossover_rate_trial_values = list(np.linspace(start=0.8, stop=0.8, num=1))
             elitism_trial_values = [14]
+
             # Extracting the class and the feature dataframes from the data
-            dset_features = dset.iloc[:, :split]
-            dset_classes = dset.iloc[:, split:]
+            start = 1
+            if name == "genbase":
+                start = start + 1
+            end = split + 1
+
+            dset_features = dset.iloc[:, start : end]
+            dset_classes = dset.iloc[:, end :]
             info_table = run(
                 generations=generations,
                 dset_features=dset_features,
@@ -141,10 +151,11 @@ def run_pipeline():
                 crossover_rate_trial_values=crossover_rate_trial_values,
                 elitism_trial_values=elitism_trial_values,
                 split=split,
-                iterations=10,
+                name=name,
+                iterations=10
             )
             csv = pd.DataFrame(data=info_table)
-            csv.to_csv(f"{file}_test_results.csv")
+            csv.to_csv(f"{name}_test_results.csv")
     print("PIPELINE CLOSED!")
 
 

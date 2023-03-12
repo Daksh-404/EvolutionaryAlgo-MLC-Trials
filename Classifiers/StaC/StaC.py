@@ -1,19 +1,16 @@
-## General imports
 import pandas as pd
-import numpy as np
-import warnings
-import time
-import sys
-
-## Sklearn imports
 from sklearn.linear_model import LogisticRegression
+import warnings
 from sklearn.metrics import hamming_loss, classification_report
+# from sklearn.metrics import precision_score, recall_score, confusion_matrix
 from sklearn.metrics import accuracy_score, label_ranking_loss, coverage_error, average_precision_score, zero_one_loss
+# from sklearn.metrics import roc_auc_score
 from sklearn.metrics import label_ranking_average_precision_score
-from sklearn.metrics import jaccard_score
+from sklearn.metrics import jaccard_similarity_score
+import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import f1_score
-
+import time
 
 warnings.filterwarnings('ignore')
 
@@ -26,7 +23,9 @@ warnings.filterwarnings('ignore')
 # dset = pd.read_csv("full_cal500.csv")
 # dset = pd.read_csv("full_rcv1.csv")
 # dset = pd.read_csv("full_flags.csv")
-dset = pd.read_csv("../datasets/Mediamill/full_mediamill.csv")
+dset = pd.read_csv("full_mediamill.csv")
+print(dset.shape)
+print(dset.head(5))
 
 # dset_features = dset.iloc[:, 1 : 73] # EMOTIONS
 # dset_features = dset.iloc[:, 1 : 295] # SCENES
@@ -37,22 +36,32 @@ dset = pd.read_csv("../datasets/Mediamill/full_mediamill.csv")
 # dset_features = dset.iloc[:, 1 : 69] # CAL 500
 # dset_features = dset.iloc[:, 0 : 944] # RCV 1 S 1
 # dset_features = dset.iloc[:, 1 : 20] # FLAGS
-dset_features = dset.iloc[:, :120] # MEDIA MILL
+dset_features = dset.iloc[:, 1 : 121] # MEDIA MILL
 features = dset_features.columns
-# # dset_classes = dset.iloc[:, 73 : ] # EMOTIONS
-# # dset_classes = dset.iloc[:, 295 : ] # SCENES
-# # dset_classes = dset.iloc[:, 104 : ] # YEAST
-# # dset_classes = dset.iloc[:, 261 : ] # BIRDS
-# # dset_classes = dset.iloc[:, 1187 : ] # GENBASE
-# # dset_classes = dset.iloc[:, 500 : ] # COREL 5 K
-# # dset_classes = dset.iloc[:, 69 : ] # CAL 500
-# # dset_classes = dset.iloc[:, 944 : ] # RCV 1 S 1
-# # dset_classes = dset.iloc[:, 20 : ] # FLAGS
-dset_classes = dset.iloc[:, 120:] # MEDIA MILL
+# dset_classes = dset.iloc[:, 73 : ] # EMOTIONS
+# dset_classes = dset.iloc[:, 295 : ] # SCENES
+# dset_classes = dset.iloc[:, 104 : ] # YEAST
+# dset_classes = dset.iloc[:, 261 : ] # BIRDS
+# dset_classes = dset.iloc[:, 1187 : ] # GENBASE
+# dset_classes = dset.iloc[:, 500 : ] # COREL 5 K
+# dset_classes = dset.iloc[:, 69 : ] # CAL 500
+# dset_classes = dset.iloc[:, 944 : ] # RCV 1 S 1
+# dset_classes = dset.iloc[:, 20 : ] # FLAGS
+dset_classes = dset.iloc[:, 121 : ] # MEDIA MILL
 classes = dset_classes.columns
 
+print(features)
+print(classes)
 
 X_Train, X_Test, Y_Train_All, Y_Test_All = train_test_split(dset_features, dset_classes, test_size = 0.3)
+print(X_Train.shape)
+print(X_Train.head(5))
+print(Y_Train_All.shape)
+print(Y_Train_All.head(5))
+print(X_Test.shape)
+print(X_Test.head(5))
+print(Y_Test_All.shape)
+print(Y_Test_All.head(5))
 
 X_Train_original = X_Train
 X_Test_original = X_Test
@@ -61,8 +70,6 @@ Y_Test_All_original = Y_Test_All
 
 Y_Pred_DFrame = pd.DataFrame()
 Y_Pred_Prob_DFrame = pd.DataFrame()
-# Y_Pred_DFrame_Train = pd.DataFrame()
-
 pos = -1
 t_tr = 0
 t_pr = 0
@@ -78,55 +85,13 @@ t_pr = 0
 # f_pos = 18 # FLAGS
 f_pos = 119 # MEDIA MILL
 
-lbl_acc = []
-
-for each_label in classes:
-    Y_Train = Y_Train_All[each_label]
-    Y_Test = Y_Test_All[each_label]
-      
-    logreg = LogisticRegression()
-    
-    tr_tr_strt = time.time()
-    logreg.fit(X_Train, Y_Train)
-    tr_tr_end = time.time()
-    
-    t_tr = t_tr + (tr_tr_end - tr_tr_strt)
-    
-    tr_pr_strt = time.time()
-    Y_Pred = logreg.predict(X_Test)
-    tr_pr_end = time.time()
-    
-    t_tr = t_tr + (tr_pr_end - tr_pr_strt)
-    
-    Y_Pred_Prob = logreg.predict_proba(X_Test)
-    
-    t_acc = 1 - hamming_loss(Y_Test, Y_Pred)
-    t_lst = [t_acc, each_label]
-    
-    lbl_acc = lbl_acc + [t_lst]
-
-
-lbl_acc.sort(reverse = True)
-
-new_lorder = []
-for ery in lbl_acc:
-    new_lorder.append(ery[1])
-
-Y_Train_New = pd.DataFrame()
-Y_Test_New = pd.DataFrame()
-
-for new_lbl in new_lorder:
-    Y_Train_New[new_lbl] = Y_Train_All[new_lbl].values
-    Y_Test_New[new_lbl] = Y_Test_All[new_lbl].values
-
-
 print("PROPOSED STACKED CLASSIFIER CHAIN")
 
 print("##### LEVEL - 0 CLASSIFIER CHAIN #####")
-for each_label in new_lorder:
+for each_label in classes:
     print("LABEL in CHAIN : ", each_label)
-    Y_Train = Y_Train_New[each_label]
-    Y_Test = Y_Test_New[each_label]
+    Y_Train = Y_Train_All[each_label]
+    Y_Test = Y_Test_All[each_label]
       
     logreg = LogisticRegression()
     
@@ -143,13 +108,11 @@ for each_label in new_lorder:
     t_pr = t_pr + (pr1_end - pr1_strt)
     
     Y_Pred_Prob = logreg.predict_proba(X_Test)
-    # Y_Pred_Train= logreg.predict(X_Train)
     
     pos = pos + 1
     prob_label = each_label + " PROB"
     Y_Pred_DFrame.insert(pos, each_label, Y_Pred)
     Y_Pred_Prob_DFrame.insert(pos, prob_label, Y_Pred_Prob[:, 1])
-    # Y_Pred_DFrame_Train.insert(pos, each_label, Y_Pred_Train)
     
     f_pos = f_pos + 1
     tr_new_col_vals = Y_Train.values
@@ -167,16 +130,9 @@ Y_Train_All_L2 = Y_Train_All_original
 X_Test_L2 = X_Test_original
 Y_Test_All_L2 = Y_Test_All_original
 
-Y_Train_New_L2 = pd.DataFrame()
-Y_Test_New_L2 = pd.DataFrame()
-
-for new_lbl in new_lorder:
-    Y_Train_New_L2[new_lbl] = Y_Train_All_L2[new_lbl].values
-    Y_Test_New_L2[new_lbl] = Y_Test_All_L2[new_lbl].values
-
-for new_lbl in new_lorder:
-    X_Train_L2[new_lbl] = Y_Train_New_L2[new_lbl].values
-    X_Test_L2[new_lbl] = Y_Pred_DFrame[new_lbl].values
+for each_label in classes:
+    X_Train_L2[each_label] = Y_Train_All_L2[each_label].values
+    X_Test_L2[each_label] = Y_Pred_DFrame[each_label].values
 
 Y_Pred_DFrame_L2 = pd.DataFrame()
 Y_Pred_Prob_DFrame_L2 = pd.DataFrame()
@@ -193,8 +149,8 @@ pos_l2 = -1
 # f_pos_l2 = 25 # FLAGS
 f_pos_l2 = 220 # MEDIA MILL
 
-print("##### LEVEL - 1 NESTED STACKING #####")
-for each_label in new_lorder:
+print("##### LEVEL - 1 CLASSIFIER CHAIN #####")
+for each_label in classes:
     print("LABEL in CHAIN : ", each_label)
     Y_Train_L2 = X_Train_L2[each_label]
     Y_Test_L2 = X_Test_L2[each_label]
@@ -220,45 +176,44 @@ for each_label in new_lorder:
     
     Y_Pred_Prob_L2 = logreg.predict_proba(X_Test_L2)
     
-    tr_ex_strt = time.time()
-    Y_Pred_L2_Train = logreg.predict(X_Train_L2)
-    tr_ex_end = time.time()
-    
-    t_tr = t_tr + (tr_ex_end - tr_ex_strt)
-    
     pos_l2 = pos_l2 + 1
     prob_label = each_label + " PROB"
     Y_Pred_DFrame_L2.insert(pos_l2, each_label, Y_Pred_L2)
     Y_Pred_Prob_DFrame_L2.insert(pos_l2, prob_label, Y_Pred_Prob_L2[:, 1])
     
     f_pos_l2 = f_pos_l2 + 1
-    tr_new_col_vals = Y_Pred_L2_Train
+    tr_new_col_vals = Y_Train_L2.values
     
     X_Train_L2.insert(f_pos_l2, each_label, tr_new_col_vals)
     X_Test_L2.insert(f_pos_l2, each_label, Y_Pred_L2)
 
+print(Y_Pred_DFrame_L2.head(5))
+print(Y_Pred_DFrame_L2.info())
+print(Y_Pred_Prob_DFrame_L2.head(5))
+print(Y_Pred_Prob_DFrame_L2.info())
+
 print("##### OVERALL PERFORMANCE EVALUATION #####")
 print("CLASSIFICATION REPORT : ")
-print(classification_report(Y_Test_New, Y_Pred_DFrame_L2))
+print(classification_report(Y_Test_All, Y_Pred_DFrame_L2))
 
-h_loss_all = hamming_loss(Y_Test_New, Y_Pred_DFrame_L2)
+h_loss_all = hamming_loss(Y_Test_All, Y_Pred_DFrame_L2)
 acc_all = 1 - h_loss_all
 print("HAMMING LOSS : ", h_loss_all)
 print("ACCURACY : ", acc_all)
 
-print("SUBSET ACCURACY : ", accuracy_score(Y_Test_New, Y_Pred_DFrame_L2))
-print("LABEL RANKING LOSS : ", label_ranking_loss(Y_Test_New, Y_Pred_Prob_DFrame_L2))
-print("COVERAGE ERROR : ", coverage_error(Y_Test_New, Y_Pred_Prob_DFrame_L2))
-print("ZERO ONE LOSS : ", zero_one_loss(Y_Test_New, Y_Pred_DFrame_L2))
-print("AVERAGE PRECISION SCORE : ", average_precision_score(Y_Test_New, Y_Pred_Prob_DFrame_L2))
+print("SUBSET ACCURACY : ", accuracy_score(Y_Test_All, Y_Pred_DFrame_L2))
+print("LABEL RANKING LOSS : ", label_ranking_loss(Y_Test_All, Y_Pred_Prob_DFrame_L2))
+print("COVERAGE ERROR : ", coverage_error(Y_Test_All, Y_Pred_Prob_DFrame_L2))
+print("ZERO ONE LOSS : ", zero_one_loss(Y_Test_All, Y_Pred_DFrame_L2))
+print("AVERAGE PRECISION SCORE : ", average_precision_score(Y_Test_All, Y_Pred_Prob_DFrame_L2))
 
-# print("ROC AUC MICRO : ", roc_auc_score(Y_Test_New, Y_Pred_Prob_DFrame_L2, average = 'micro'))
-# print("ROC AUC MACRO : ", roc_auc_score(Y_Test_New, Y_Pred_Prob_DFrame_L2, average = 'macro'))
+# print("ROC AUC MICRO : ", roc_auc_score(Y_Test_All, Y_Pred_Prob_DFrame_L2, average = 'micro'))
+# print("ROC AUC MACRO : ", roc_auc_score(Y_Test_All, Y_Pred_Prob_DFrame_L2, average = 'macro'))
 
-print("LABEL RANKING APR : ", label_ranking_average_precision_score(Y_Test_New, Y_Pred_Prob_DFrame_L2))
-print("JACCARD MACRO : ", jaccard_score(Y_Test_New, Y_Pred_DFrame_L2, average = 'macro'))
-print("JACCARD MICRO : ", jaccard_score(Y_Test_New, Y_Pred_DFrame_L2, average = 'micro'))
-print("JACCARD SAMPLES : ", jaccard_score(Y_Test_New, Y_Pred_DFrame_L2, average = 'samples'))
+print("LABEL RANKING APR : ", label_ranking_average_precision_score(Y_Test_All, Y_Pred_Prob_DFrame_L2))
+print("JACCARD MACRO : ", jaccard_similarity_score(Y_Test_All, Y_Pred_DFrame_L2, average = 'macro'))
+print("JACCARD MICRO : ", jaccard_similarity_score(Y_Test_All, Y_Pred_DFrame_L2, average = 'micro'))
+print("JACCARD SAMPLES : ", jaccard_similarity_score(Y_Test_All, Y_Pred_DFrame_L2, average = 'samples'))
 
 def one_error(Y_test_oe,Y_score_oe):
     print("Function Called !")
@@ -276,12 +231,12 @@ def one_error(Y_test_oe,Y_score_oe):
     
     return count_oe/Y_score_oe.shape[0]
 
-one_err = one_error(Y_Test_New, Y_Pred_Prob_DFrame_L2.values)
+one_err = one_error(Y_Test_All, Y_Pred_Prob_DFrame_L2.values)
 print("ONE ERROR : ", one_err)
 
-print("F1 SCORE MACRO : ", f1_score(Y_Test_New, Y_Pred_DFrame_L2, average = 'macro'))
-print("F1 SCORE MICRO : ", f1_score(Y_Test_New, Y_Pred_DFrame_L2, average = 'micro'))
-print("F1 SCORE SAMPLES : ", f1_score(Y_Test_New, Y_Pred_DFrame_L2, average = 'samples'))
+print("F1 MACRO : ", f1_score(Y_Test_All, Y_Pred_DFrame_L2, average = 'macro'))
+print("F1 MICRO : ", f1_score(Y_Test_All, Y_Pred_DFrame_L2, average = 'micro'))
+print("F1 SAMPLES : ", f1_score(Y_Test_All, Y_Pred_DFrame_L2, average = 'samples'))
 
 print("Training Time : ", t_tr)
 print("Time in Predictions : ", t_pr)

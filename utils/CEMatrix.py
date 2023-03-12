@@ -9,8 +9,8 @@ def joint_entropy(first, second, uniq_first, uniq_second):
       probs.append(np.mean(np.logical_and(first == value1, second == value2)))
   return stats.entropy(probs)
 
-def entropy(X):
-    probs = [np.mean(X == c) for c in [0, 1]]
+def entropy(X, unique_x):
+    probs = [np.mean(X == c) for c in unique_x]
     return stats.entropy(probs)
 
 def construct_conditional_entropy_matrix(label_space):
