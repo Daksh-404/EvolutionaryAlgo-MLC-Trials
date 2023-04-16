@@ -12,21 +12,13 @@ class GeneticAlgorithm:
         # This fitness function calculates the upper triangular matrix of Conditional Entropy
         # after it is rearranged according to the given chromosome / permutation
 
-        # Reaarangement
-        new_objective_fn = []
-        for idx1 in chromosome:
-            row_conditional_entropy = []
-            for idx2 in chromosome:
-                row_conditional_entropy.append(self.conditional_entropy_matrix[idx1 - 1][idx2 - 1])
-            new_objective_fn.append(row_conditional_entropy)
-
-        # Sum of upper triangular matrix
+        # Reaarangement and calculation of fitness value
         fitness_val = 0
-        for i in range(self.chromosome_size):
-            for j in range(self.chromosome_size):
-                if (i < j):
-                    fitness_val = fitness_val + new_objective_fn[i][j]
-
+        for i,idx1 in enumerate(chromosome):
+            for j,idx2 in enumerate(chromosome):
+                if i < j:
+                    fitness_val = fitness_val + self.conditional_entropy_matrix[idx1 - 1][idx2 - 1]
+        
         return fitness_val
     
     def generate_individual(self):

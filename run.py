@@ -11,7 +11,7 @@ warnings.filterwarnings("ignore")
 
 from EvolutionaryAlgorithms.GeneticAlgorithm import GeneticAlgorithm
 from Classifiers.StaC.StaCv1 import StackedChaining
-from utils.CEMatrix import construct_conditional_entropy_matrix
+from utils.utils import construct_conditional_entropy_matrix
 
 path_to_dataset = os.getcwd() + "/Datasets"
 
@@ -129,34 +129,34 @@ def run_pipeline():
         if file.count("testing") == 0:
             split = int(file.split("_")[1].split(".")[0])
             name = file.split("_")[0]
-            if name == "mediamill":
-                dset = pd.read_csv(os.path.join(path_to_dataset, file))
-                generations = [100]
-                mutation_rate_trial_values = list(np.linspace(start=0.01, stop=0.01, num=1))
-                crossover_rate_trial_values = list(np.linspace(start=0.8, stop=0.8, num=1))
-                elitism_trial_values = [14]
+            
+            dset = pd.read_csv(os.path.join(path_to_dataset, file))
+            generations = [100]
+            mutation_rate_trial_values = list(np.linspace(start=0.01, stop=0.01, num=1))
+            crossover_rate_trial_values = list(np.linspace(start=0.8, stop=0.8, num=1))
+            elitism_trial_values = [14]
 
-                # Extracting the class and the feature dataframes from the data
-                start = 1
-                if name == "genbase":
-                    start = start + 1
-                end = split + 1
+            # Extracting the class and the feature dataframes from the data
+            start = 1
+            if name == "genbase":
+                start = start + 1
+            end = split + 1
 
-                dset_features = dset.iloc[:, start : end]
-                dset_classes = dset.iloc[:, end :]
-                info_table = run(
-                    generations=generations,
-                    dset_features=dset_features,
-                    dset_classes=dset_classes,
-                    mutation_rate_trial_values=mutation_rate_trial_values,
-                    crossover_rate_trial_values=crossover_rate_trial_values,
-                    elitism_trial_values=elitism_trial_values,
-                    split=split,
-                    name=name,
-                    iterations=10
-                )
-                csv = pd.DataFrame(data=info_table)
-                csv.to_csv(f"{name}_test_results.csv")
+            dset_features = dset.iloc[:, start : end]
+            dset_classes = dset.iloc[:, end :]
+            info_table = run(
+                generations=generations,
+                dset_features=dset_features,
+                dset_classes=dset_classes,
+                mutation_rate_trial_values=mutation_rate_trial_values,
+                crossover_rate_trial_values=crossover_rate_trial_values,
+                elitism_trial_values=elitism_trial_values,
+                split=split,
+                name=name,
+                iterations=10
+            )
+            csv = pd.DataFrame(data=info_table)
+            csv.to_csv(f"{name}_test_results.csv")
     print("PIPELINE CLOSED!")
 
 

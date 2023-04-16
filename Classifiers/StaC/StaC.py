@@ -214,9 +214,9 @@ print("AVERAGE PRECISION SCORE : ", average_precision_score(Y_Test_All, Y_Pred_P
 # print("ROC AUC MACRO : ", roc_auc_score(Y_Test_All, Y_Pred_Prob_DFrame_L2, average = 'macro'))
 
 print("LABEL RANKING APR : ", label_ranking_average_precision_score(Y_Test_All, Y_Pred_Prob_DFrame_L2))
-print("JACCARD MACRO : ", jaccard_similarity_score(Y_Test_All, Y_Pred_DFrame_L2, average = 'macro'))
-print("JACCARD MICRO : ", jaccard_similarity_score(Y_Test_All, Y_Pred_DFrame_L2, average = 'micro'))
-print("JACCARD SAMPLES : ", jaccard_similarity_score(Y_Test_All, Y_Pred_DFrame_L2, average = 'samples'))
+print("JACCARD MACRO : ", jaccard_score(Y_Test_All, Y_Pred_DFrame_L2, average = 'macro'))
+print("JACCARD MICRO : ", jaccard_score(Y_Test_All, Y_Pred_DFrame_L2, average = 'micro'))
+print("JACCARD SAMPLES : ", jaccard_score(Y_Test_All, Y_Pred_DFrame_L2, average = 'samples'))
 
 def one_error(Y_test_oe,Y_score_oe):
     print("Function Called !")
