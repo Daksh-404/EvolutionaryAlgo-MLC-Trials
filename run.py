@@ -34,7 +34,9 @@ def test_parameters(
     for metric in metrics_list:
         info_table[metric] = []
     for i in range(iterations):
+        # change to differential evolution here
         geneticObj = GeneticAlgorithm(len(dset_classes.columns), ce_matrix)
+        #remove mutation rate and elitism rate
         label_order = geneticObj.genetic_algorithm(
             population_size=100,
             num_generations=generation,
