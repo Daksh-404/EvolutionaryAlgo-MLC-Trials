@@ -43,5 +43,5 @@ def construct_mutual_information_matrix(label_space):
         if i != j:
           col_j = label_space[:, j]
           ans[i][j] = joint_entropy(col_i, col_j, unique_values_i, idx_to_unique_vals[j]) - entropy(col_i, unique_values_i)
-          ans[i][j] = entropy(col_j, idx_to_unique_vals[j]) - ans[i][j]  
+          ans[i][j] = entropy(col_j, idx_to_unique_vals[j]) - ans[i][j]
     return ans
