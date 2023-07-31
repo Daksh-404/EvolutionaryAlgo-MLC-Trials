@@ -74,6 +74,11 @@ LSM ensures that important permutations are maintained and relative cyclic order
 permutation cycles.
 
 # Results
+
+## Performance Comparision
 ![plot](plot.jpeg)
+
+## Dunn Test
+![dunn](dunn_test.png)
 
 
