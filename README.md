@@ -1,4 +1,4 @@
-# Permutation Driven Evolutionary Ordering with Dependency Filtering for Multi-Label Classification
+# Permutation Driven Evolutionary Ordering with Dependency Filtering for Multi-Label Classification(GenStaC)
 
 Conducting trials on utilizing various evolutionary algorithms and techniques to solve Multi-Label Classification problem. A Problem Transformation approach is used with respect to the utilization of Evolutionary techniques for our classification purposes.
 
@@ -73,9 +73,7 @@ OSCM maintains the order while combining parents, to maintain important sub-perm
 LSM ensures that important permutations are maintained and relative cyclic order is maintained in
 permutation cycles.
 
-The rest of the paper is organized as follows. Section 2 incorporates the related work which elaborates
-on various state-of-the-art MLC algorithms. The preliminary information required for understanding the
-proposed approach is provided in Section 3. The proposed method is detailed in Section 4. Section 5
-provides details about multiple standard datasets and performance metrics used to evaluate our proposed
-method and used for comparison purposes. Section 6 comprises overall results, performance comparison, and
-discussion. Finally, Section 7 concludes the paper with future directions
+# Results
+![plot](plot.jpeg)
+
+
